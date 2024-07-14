@@ -28,7 +28,7 @@ public class NettyServer {
             // Configure the server
             httpBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new MyChannelInitializer()) // <-- Our handler created here
+                    .childHandler(new CustomInitializer()) // <-- Our handler created here
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
