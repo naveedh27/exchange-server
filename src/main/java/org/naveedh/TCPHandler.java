@@ -22,14 +22,14 @@ public class TCPHandler {
         this.port = port;
     }
 
-    private int port;
+    private final int port;
 
     @Autowired
     private EventLoopGroup workerGroup;
     @Autowired
     private EventLoopGroup bossGroup;
     @Autowired
-    CustomChannelInitializer customChannelInitializer;
+    private CustomChannelInitializer customChannelInitializer;
 
     private Logger logger = LoggerFactory.getLogger(TCPHandler.class);
 
