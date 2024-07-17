@@ -32,8 +32,7 @@ public class ServerBootstrap {
 
     private Logger logger = LoggerFactory.getLogger(ServerBootstrap.class);
 
-    @PostConstruct
-    public void start() throws InterruptedException {
+    public void bootstrap() throws InterruptedException {
 
         io.netty.bootstrap.ServerBootstrap httpBootstrap = new io.netty.bootstrap.ServerBootstrap();
         // Configure the server
