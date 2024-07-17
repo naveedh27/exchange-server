@@ -1,6 +1,5 @@
 package org.naveedh;
 
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -16,9 +15,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @Component
-public class TCPHandler {
+public class ServerBootstrap {
 
-    public TCPHandler(int port) {
+    public ServerBootstrap(int port) {
         this.port = port;
     }
 
@@ -29,19 +28,19 @@ public class TCPHandler {
     @Autowired
     private EventLoopGroup bossGroup;
     @Autowired
-    private CustomChannelInitializer customChannelInitializer;
+    private ServerChannelInitializer serverChannelInitializer;
 
-    private Logger logger = LoggerFactory.getLogger(TCPHandler.class);
+    private Logger logger = LoggerFactory.getLogger(ServerBootstrap.class);
 
     @PostConstruct
     public void start() throws InterruptedException {
 
-        ServerBootstrap httpBootstrap = new ServerBootstrap();
+        io.netty.bootstrap.ServerBootstrap httpBootstrap = new io.netty.bootstrap.ServerBootstrap();
         // Configure the server
         httpBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler("SERVER LOGGER", LogLevel.INFO))
-                .childHandler(customChannelInitializer)
+                .childHandler(serverChannelInitializer)
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true);
 

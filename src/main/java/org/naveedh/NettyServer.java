@@ -5,8 +5,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class NettyServer {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
-        TCPHandler tcpHandler = (TCPHandler) ctx.getBean("nettyServer");
+        ServerBootstrap serverBootstrap = (ServerBootstrap) ctx.getBean("nettyServerBootstrap");
     }
 }

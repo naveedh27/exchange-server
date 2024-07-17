@@ -11,10 +11,10 @@
 
         <bean id="bossGroup" class="io.netty.channel.nio.NioEventLoopGroup"/>
         <bean id="workerGroup" class="io.netty.channel.nio.NioEventLoopGroup" />
-        <bean id="customChannelInitializer" class="org.naveedh.CustomChannelInitializer" />
-        <bean id="customChannelInboundHandler" class="org.naveedh.CustomChannelInboundHandler" />
-        <bean id="nettyServer" class="org.naveedh.TCPHandler">
-            <constructor-arg name="port" value="8701" />
+        <bean id="customChannelInitializer" class="org.naveedh.ServerChannelInitializer" />
+        <bean id="customChannelInboundHandler" class="org.naveedh.ProtobufChannelHandler" />
+        <bean id="nettyServerBootstrap" class="org.naveedh.ServerBootstrap">
+            <constructor-arg name="port" value="8080" />
         </bean>
 
 

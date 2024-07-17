@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package org.naveedh;
+
+message HeartBeat {
+  int64 timestamp = 1;
+}
+
+message NewOrder {
+  string clOrdID = 1;
+  string exchange = 2;
+  string instrument = 3;
+  int32 quantity = 4;
+  double price = 5;
+}
+
+message ReplaceOrder {
+  string clOrdID = 1;
+  string origClOrdID = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+message CancelOrder {
+  string clOrdID = 1;
+  string origClOrdID = 2;
+}
+
+message ExecutionReport {
+  string clOrdID = 1;
+  string origClOrdID = 2;
+  string exchange = 3;
+  string instrument = 4;
+  int32 quantity = 5;
+  double price = 6;
+  bool isAccepted = 7;
+}
+
+message WrapperMessage {
+  oneof message{
+    HeartBeat heartbeat = 1;
+    NewOrder newOrder = 2;
+    ReplaceOrder replaceOrder = 3;
+    CancelOrder cancelOrder = 4;
+    ExecutionReport executionReport = 5;
+  }
+}
