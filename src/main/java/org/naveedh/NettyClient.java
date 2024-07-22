@@ -9,6 +9,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.naveedh.Messages.HeartBeat;
 import org.naveedh.Messages.WrapperMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class NettyClient {
                         ch.pipeline()
                                 .addLast(new ProtobufDecoder(WrapperMessage.getDefaultInstance()))
                                 .addLast(new ProtobufEncoder())
-                                .addLast(new IdleStateHandler(0, 5, 5))
+                                .addLast(new IdleStateHandler(0, 5, 0))
                                 .addLast(new SimpleChannelInboundHandler<WrapperMessage>() {
                                     @Override
                                     protected void channelRead0(ChannelHandlerContext ctx, WrapperMessage msg) throws Exception {
@@ -49,7 +50,7 @@ public class NettyClient {
                                     @Override
                                     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
                                         if (evt instanceof IdleStateEvent) {
-                                            Messages.HeartBeat heartBeat = Messages.HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
+                                            HeartBeat heartBeat = HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
                                             WrapperMessage message = WrapperMessage.newBuilder().setHeartbeat(heartBeat).build();
                                             ctx.writeAndFlush(message);
                                             System.out.println("Sent Heartbeat :: " + Instant.ofEpochMilli(message.getHeartbeat().getTimestamp()).atZone(ZoneId.systemDefault()));
