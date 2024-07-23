@@ -15,19 +15,18 @@ import java.util.function.Function;
 @Component
 public class ClientChannelInBoundHandler extends SimpleChannelInboundHandler<Messages.WrapperMessage> {
 
-    private Logger logger = LoggerFactory.getLogger(ClientChannelInBoundHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ClientChannelInBoundHandler.class);
 
-    private Function<Messages.WrapperMessage, String> timeConverter = msg -> Instant
+    private final Function<Messages.WrapperMessage, String> timeConverter = msg -> Instant
             .ofEpochMilli(msg.getHeartbeat().getTimestamp())
             .atZone(ZoneId.systemDefault())
             .format(DateTimeFormatter.ISO_LOCAL_TIME);
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Messages.WrapperMessage msg) throws Exception {
-        switch (msg.getMessageCase()) {
-            case HEARTBEAT ->
-                    logger.info("Recv Heartbeat :: {}", timeConverter.apply(msg));
+    protected void channelRead0(ChannelHandlerContext ctx, Messages.WrapperMessage msg) {
+        if (msg.getMessageCase() == Messages.WrapperMessage.MessageCase.HEARTBEAT) {
+            logger.info("Recv Heartbeat :: {}", timeConverter.apply(msg));
         }
     }
 
