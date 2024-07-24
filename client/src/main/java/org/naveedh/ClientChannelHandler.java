@@ -1,7 +1,6 @@
 package org.naveedh;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 @Component
-public class ClientChannelInBoundHandler extends SimpleChannelInboundHandler<Messages.WrapperMessage> {
+public class ClientChannelHandler extends AbstractSimpleDuplexHandler<Messages.WrapperMessage> {
 
-    private final Logger logger = LoggerFactory.getLogger(ClientChannelInBoundHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ClientChannelHandler.class);
 
     private final Function<Messages.WrapperMessage, String> timeConverter = msg -> Instant
             .ofEpochMilli(msg.getHeartbeat().getTimestamp())
@@ -24,7 +23,7 @@ public class ClientChannelInBoundHandler extends SimpleChannelInboundHandler<Mes
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Messages.WrapperMessage msg) {
+    protected void read(ChannelHandlerContext ctx, Messages.WrapperMessage msg) {
         if (msg.getMessageCase() == Messages.WrapperMessage.MessageCase.HEARTBEAT) {
             logger.info("Recv Heartbeat :: {}", timeConverter.apply(msg));
         }

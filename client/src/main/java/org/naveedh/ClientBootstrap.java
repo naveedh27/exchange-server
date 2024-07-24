@@ -2,6 +2,7 @@ package org.naveedh;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -32,7 +33,7 @@ public class ClientBootstrap {
     private int hbInterval;
 
     @Autowired
-    private ClientChannelInBoundHandler clientHandler;
+    private ClientChannelHandler channelHandler;
 
     public void bootstrap() throws InterruptedException {
 
@@ -49,17 +50,23 @@ public class ClientBootstrap {
                                 .addLast(new ProtobufDecoder(Messages.WrapperMessage.getDefaultInstance()))
                                 .addLast(new ProtobufEncoder())
                                 .addLast(new IdleStateHandler(0, hbInterval, 0))
-                                .addLast(clientHandler);
+                                .addLast(channelHandler);
                     }
                 });
         // Bind and start to accept incoming connections.
         ChannelFuture httpChannel = bootstrap.connect(host, port);
 
-        if (httpChannel.awaitUninterruptibly().isSuccess()) {
-            logger.info("App Started. Running on Port :: {}", port);
-        } else {
-            logger.info("Failed to start App.");
-        }
+        httpChannel.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if(future.isSuccess()) {
+                    logger.info("Client Connected to Server on Port :: {}", port);
+                } else {
+                    logger.error("Error connecting to Server. Host :: {} Port :: {}", host, port);
+                    System.exit(0);
+                }
+            }
+        });
 
         // Wait until server socket is closed
         httpChannel.channel().closeFuture().sync();
