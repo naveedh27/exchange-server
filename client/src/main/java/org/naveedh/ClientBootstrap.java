@@ -35,7 +35,7 @@ public class ClientBootstrap {
     @Autowired
     private ClientChannelHandler channelHandler;
 
-    public void bootstrap() throws InterruptedException {
+    public ChannelFuture bootstrap() throws InterruptedException {
 
         Bootstrap bootstrap = new Bootstrap();
 
@@ -54,22 +54,18 @@ public class ClientBootstrap {
                     }
                 });
         // Bind and start to accept incoming connections.
-        ChannelFuture httpChannel = bootstrap.connect(host, port);
+        ChannelFuture tcpChannel = bootstrap.connect(host, port);
 
-        httpChannel.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-                if(future.isSuccess()) {
-                    logger.info("Client Connected to Server on Port :: {}", port);
-                } else {
-                    logger.error("Error connecting to Server. Host :: {} Port :: {}", host, port);
-                    System.exit(0);
-                }
+        tcpChannel.addListener((ChannelFutureListener) future -> {
+            if(future.isSuccess()) {
+                logger.info("Client Connected to Server on Port :: {}", port);
+            } else {
+                logger.error("Error connecting to Server. Host :: {} Port :: {}", host, port);
+                System.exit(0);
             }
         });
 
-        // Wait until server socket is closed
-        httpChannel.channel().closeFuture().sync();
+        return tcpChannel;
 
     }
 
