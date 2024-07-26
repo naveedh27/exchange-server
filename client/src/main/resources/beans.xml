@@ -8,7 +8,7 @@
 
     <context:property-placeholder location="classpath:application.properties"/>
     <context:annotation-config/>
-    <bean id="clientBootstrap" class="org.naveedh.ClientBootstrap"/>
+    <bean id="clientConfig" class="org.naveedh.NettyClientConfig"/>
     <bean id="clientChannelHandler" class="org.naveedh.ClientChannelHandler"/>
 
 </beans>

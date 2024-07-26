@@ -26,6 +26,8 @@ public class ClientChannelHandler extends AbstractSimpleDuplexHandler<Messages.W
     protected void read(ChannelHandlerContext ctx, Messages.WrapperMessage msg) {
         if (msg.getMessageCase() == Messages.WrapperMessage.MessageCase.HEARTBEAT) {
             logger.info("Recv Heartbeat :: {}", timeConverter.apply(msg));
+        } else if (msg.getMessageCase() == Messages.WrapperMessage.MessageCase.EXECUTIONREPORT) {
+            logger.info("Recv ExecReport :: {}", msg.getExecutionReport());
         }
     }
 

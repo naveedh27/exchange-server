@@ -1,6 +1,7 @@
 package org.naveedh;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
@@ -16,12 +17,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Component
-public class ClientBootstrap {
+@Configuration
+@PropertySource("application.properties")
+@ComponentScan(basePackages = "org.naveedh.*")
+@EnableScheduling
+public class NettyClientConfig {
 
-    private Logger logger = LoggerFactory.getLogger(ClientBootstrap.class);
+    private Logger logger = LoggerFactory.getLogger(NettyClientConfig.class);
 
     @Value("${client.port}")
     private int port;
@@ -35,7 +43,8 @@ public class ClientBootstrap {
     @Autowired
     private ClientChannelHandler channelHandler;
 
-    public ChannelFuture bootstrap() throws InterruptedException {
+    @Bean(name = "clientChannel")
+    public Channel bootstrap() throws InterruptedException {
 
         Bootstrap bootstrap = new Bootstrap();
 
@@ -46,10 +55,9 @@ public class ClientBootstrap {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline()
-                                .addLast(new LoggingHandler("CLIENT LOGGER", LogLevel.INFO))
                                 .addLast(new ProtobufDecoder(Messages.WrapperMessage.getDefaultInstance()))
                                 .addLast(new ProtobufEncoder())
-                                .addLast(new IdleStateHandler(0, hbInterval, 0))
+                                .addLast(new IdleStateHandler(0, 0, 0))
                                 .addLast(channelHandler);
                     }
                 });
@@ -65,8 +73,7 @@ public class ClientBootstrap {
             }
         });
 
-        return tcpChannel;
-
+        tcpChannel.awaitUninterruptibly();
+        return tcpChannel.channel();
     }
-
 }

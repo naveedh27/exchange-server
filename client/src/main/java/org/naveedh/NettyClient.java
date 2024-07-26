@@ -1,31 +1,26 @@
 package org.naveedh;
 
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 
 public class NettyClient {
 
-    public static void main(String[] args) throws InterruptedException {
-        ApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
-        ClientBootstrap clientBootstrap = (ClientBootstrap) ctx.getBean("clientBootstrap");
-        ChannelFuture tcpChannel = clientBootstrap.bootstrap();
+    private static Logger logger = LoggerFactory.getLogger(NettyClientConfig.class);
 
-        Messages.NewOrder newOrder = Messages.NewOrder.newBuilder()
-                .setClOrdID("11A")
-                .setExchange("XNSE")
-                .setInstrument("INFY")
-                .build();
-        Messages.WrapperMessage msg = Messages.WrapperMessage.newBuilder().setNewOrder(newOrder).build();
+    public static void main(String[] args) {
+        ApplicationContext ctx = new AnnotationConfigApplicationContext("org.naveedh");
+        Channel tcpChannel = ctx.getBean(Channel.class);
 
-        tcpChannel.addListener(future -> {
-           if(future.isSuccess()) {
-               tcpChannel.channel().writeAndFlush(msg);
-           }
-        });
-
-        // Wait until server socket is closed
-        tcpChannel.channel().closeFuture().sync();
+        try {
+            tcpChannel.closeFuture().sync();
+        } catch (InterruptedException e) {
+            logger.error("Error closing future", e);
+        } finally {
+            tcpChannel.eventLoop().shutdownGracefully();
+        }
     }
 }

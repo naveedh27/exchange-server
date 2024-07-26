@@ -20,9 +20,16 @@ public class ProtobufChannelHandler extends ChannelInboundHandlerAdapter {
         if(msg != null){
             Messages.WrapperMessage t = (Messages.WrapperMessage) msg;
             logger.info(t.toString());
-            HeartBeat heartBeat = HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
-            WrapperMessage wrapperMessage = WrapperMessage.newBuilder().setHeartbeat(heartBeat).build();
-            ctx.writeAndFlush(wrapperMessage);
+            WrapperMessage.Builder wrapperMessageBuilder = WrapperMessage.newBuilder();
+            if(t.hasHeartbeat()) {
+                HeartBeat heartBeat = HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
+                wrapperMessageBuilder.setHeartbeat(heartBeat);
+            } else if (t.hasNewOrder()) {
+                NewOrder newOrder = t.getNewOrder();
+                ExecutionReport executionReport = ExecutionReport.newBuilder().setClOrdID(newOrder.getClOrdID()).build();
+                wrapperMessageBuilder.setExecutionReport(executionReport);
+            }
+            ctx.writeAndFlush(wrapperMessageBuilder.build());
         }
     }
 

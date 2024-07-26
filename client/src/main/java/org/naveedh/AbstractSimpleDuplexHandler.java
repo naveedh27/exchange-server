@@ -3,7 +3,6 @@ package org.naveedh;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.internal.TypeParameterMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,13 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.function.Function;
 
 public abstract class AbstractSimpleDuplexHandler<T> extends ChannelDuplexHandler {
-
-    private TypeParameterMatcher typeParameterMatcher;
-    private boolean autoRelease;
-
-    public AbstractSimpleDuplexHandler() {
-        this.autoRelease = true;
-    }
 
     private final Logger logger = LoggerFactory.getLogger(AbstractSimpleDuplexHandler.class);
 
