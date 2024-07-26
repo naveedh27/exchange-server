@@ -11,14 +11,14 @@ import static org.naveedh.Messages.*;
 
 @ChannelHandler.Sharable
 @Component
-public class ProtobufChannelHandler<T> extends ChannelInboundHandlerAdapter {
+public class ProtobufChannelHandler extends ChannelInboundHandlerAdapter {
 
     private Logger logger = LoggerFactory.getLogger(ProtobufChannelHandler.class);
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if(msg != null){
-            T t = (T) msg;
+            Messages.WrapperMessage t = (Messages.WrapperMessage) msg;
             logger.info(t.toString());
             HeartBeat heartBeat = HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
             WrapperMessage wrapperMessage = WrapperMessage.newBuilder().setHeartbeat(heartBeat).build();
@@ -27,7 +27,7 @@ public class ProtobufChannelHandler<T> extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         HeartBeat heartBeat = HeartBeat.newBuilder().setTimestamp(System.currentTimeMillis()).build();
         WrapperMessage wrapperMessage = WrapperMessage.newBuilder().setHeartbeat(heartBeat).build();
         ctx.writeAndFlush(wrapperMessage);
